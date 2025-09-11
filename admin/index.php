@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require '../config.php';
 require 'auth_admin.php'; // ตรวจสอบสิทธิ์ผู้ดูแลระบบ
 
@@ -58,7 +58,7 @@ require 'auth_admin.php'; // ตรวจสอบสิทธิ์ผู้ด
                         </div>
                         <h5 class="card-title fw-bold">จัดการหมวดหมู่</h5>
                         <p class="card-text text-muted">สร้างและจัดการหมวดหมู่สินค้า</p>
-                        <a href="categories.php" class="btn btn-dark btn-lg w-100 rounded-pill shadow-sm">
+                        <a href="category.php" class="btn btn-dark btn-lg w-100 rounded-pill shadow-sm">
                             <i class="bi bi-tags me-2"></i>เข้าจัดการ
                         </a>
                     </div>

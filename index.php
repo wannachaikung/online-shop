@@ -150,13 +150,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <p class="card-text text-muted small"><?= nl2br(htmlspecialchars($product['description'])) ?></p>
                             <h4 class="text-primary-blue fw-bold mb-3">฿<?= number_format($product['price'], 2) ?></h4>
                             
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 ">
                                 <?php if ($isLoggedIn): ?>
                                     <form action="cart.php" method="post" class="flex-fill">
                                         <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-primary w-100">
-                                            <i class="bi bi-cart-plus me-1"></i>เพิ่มลงตะกร้า
+                                        <button type="submit" class="btn btn-primary w-200">
+                                            <i class="bi bi-cart-plus me-1" ></i>เพิ่มลงตะกร้า
                                         </button>
                                     </form>
                                 <?php else: ?>
@@ -167,7 +167,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 
                                 <a href="product_detail.php?id=<?= $product['product_id'] ?>" 
                                    class="btn btn-outline-primary">
-                                    <i class="bi bi-eye"></i>
+                                    <i class="bi bi-eye"> รายละเอียด</i>
                                 </a>
                             </div>
                         </div>

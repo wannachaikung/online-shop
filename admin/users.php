@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require '../config.php';
 require 'auth_admin.php';
 
@@ -22,16 +22,25 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <title>จัดการสมาชิก</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CDN sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        * { font-family: 'Kanit', sans-serif; }
-        body { background: linear-gradient(135deg, rgba(108, 179, 241, 0.9), rgba(63, 125, 241, 0.9) 100%); min-height: 100vh; }
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, rgba(108, 179, 241, 0.9), rgba(63, 125, 241, 0.9) 100%);
+            min-height: 100vh;
+        }
     </style>
 </head>
 
@@ -87,7 +96,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <tr>
                                             <th class="py-3">
                                                 <i class="bi bi-person me-2"></i>ชื่อผู้ใช้
-                                            </th> 
+                                            </th>
                                             <th class="py-3">
                                                 <i class="bi bi-person-badge me-2"></i>ชื่อ-นามสกุล
                                             </th>
@@ -108,7 +117,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td>
                                                     <div class="d-flex align-items-center gap-2">
                                                         <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                                                             style="width: 40px; height: 40px;">
+                                                            style="width: 40px; height: 40px;">
                                                             <?= strtoupper(substr($user['username'], 0, 1)) ?>
                                                         </div>
                                                         <span class="fw-semibold"><?= htmlspecialchars($user['username']) ?></span>
@@ -127,16 +136,23 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="btn-group" role="group">
-                                                        <a href="edit_user.php?id=<?= $user['user_id'] ?>" 
-                                                           class="btn btn-outline-warning btn-sm rounded-pill me-2"
-                                                           data-bs-toggle="tooltip" title="แก้ไขข้อมูล">
-                                                            <i class="bi bi-pencil-square"></i>
+                                                        <a href="edit_user.php?id=<?= $user['user_id'] ?>"
+                                                            class="btn btn-outline-warning btn-sm rounded-pill me-2"
+                                                            data-bs-toggle="tooltip" title="แก้ไขข้อมูล">
+                                                            <i class="bi bi-pencil-square"> edit</i>
                                                         </a>
-                                                        <a href="users.php?delete=<?= $user['user_id'] ?>" 
-                                                           class="btn btn-outline-danger btn-sm rounded-pill"
-                                                           onclick="return confirm('คุณต้องการลบสมาชิกนี้หรือไม่?')"
-                                                           data-bs-toggle="tooltip" title="ลบสมาชิก">
-                                                            <i class="bi bi-trash"></i>
+
+                                                        <!-- <a href="users.php?delete=<?= $user['user_id'] ?>"
+                                                            class="btn btn-outline-danger btn-sm rounded-pill"
+                                                            onclick="return confirm('คุณต้องการลบสมาชิกนี้หรือไม่?')"
+                                                            data-bs-toggle="tooltip" title="ลบสมาชิก"> -->
+
+                                                        <form action="del_sweet.php" method="POST" style="display:inline;">
+                                                            <input type="hidden" name="u_id" value="<?php echo $user['user_id']; ?>">
+                                                            <button type="button" class="delete-button btn btn-danger btn-sm " data-user-id="<?php echo
+                                                            $user['user_id']; ?>">Delete</button>
+                                                        </form>
+                                                        <!-- <i class="bi bi-trash"></i> -->
                                                         </a>
                                                     </div>
                                                 </td>
@@ -162,9 +178,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <div class="card-body text-center">
                                             <i class="bi bi-person-check-fill fs-2 mb-2"></i>
                                             <h5>สมาชิกใหม่วันนี้</h5>
-                                            <h3><?= count(array_filter($users, function($user) { 
-                                                return date('Y-m-d', strtotime($user['created_at'])) == date('Y-m-d'); 
-                                            })) ?> คน</h3>
+                                            <h3><?= count(array_filter($users, function ($user) {
+                                                    return date('Y-m-d', strtotime($user['created_at'])) == date('Y-m-d');
+                                                })) ?> คน</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -173,9 +189,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <div class="card-body text-center">
                                             <i class="bi bi-calendar-plus-fill fs-2 mb-2"></i>
                                             <h5>สมาชิกใหม่สัปดาห์นี้</h5>
-                                            <h3><?= count(array_filter($users, function($user) { 
-                                                return strtotime($user['created_at']) >= strtotime('-7 days'); 
-                                            })) ?> คน</h3>
+                                            <h3><?= count(array_filter($users, function ($user) {
+                                                    return strtotime($user['created_at']) >= strtotime('-7 days');
+                                                })) ?> คน</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -191,9 +207,46 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
         // Initialize tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     </script>
+    <script>
+        // ฟังกช์ นั ส ำหรับแสดงกลอ่ งยนื ยัน SweetAlert2
+        function showDeleteConfirmation(userId) {
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: 'คุณจะไม่สำมำรถเรียกคืนข ้อมูลกลับได ้!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ลบ',
+                cancelButtonText: 'ยกเลิก',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // หำกผใู้ชย้นื ยัน ใหส้ ง่ คำ่ ฟอรม์ ไปยัง delete.php เพื่อลบข ้อมูล
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'del_sweet.php';
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'u_id';
+                    input.value = userId;
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+        // แนบตัวตรวจจับเหตุกำรณ์คลิกกับองค์ปุ ่่มลบทั ่ ้งหมดที่มีคลำส delete-button
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-user-id');
+                showDeleteConfirmation(userId);
+            });
+        });
+    </script>
+
 </body>
+
 </html>
