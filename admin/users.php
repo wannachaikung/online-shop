@@ -45,6 +45,71 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
+<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/68s_onlineshop/index.php">
+            <i class="bi bi-cart3 fs-4"></i>
+            <span>Online Shop</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-2" href="/68s_onlineshop/index.php">
+                        <i class="bi bi-house"></i>หน้าหลัก
+                    </a>
+                </li>
+
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" href="/68s_onlineshop/admin/index.php">
+                            <i class="bi bi-shield-check"></i>แผงควบคุม
+                        </a>
+                    </li>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" href="/68s_onlineshop/cart.php">
+                            <i class="bi bi-bag"></i>ตะกร้าสินค้า
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                            <?= htmlspecialchars($_SESSION['username']) ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/68s_onlineshop/profile.php">ข้อมูลส่วนตัว</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger d-flex align-items-center gap-2" href="/68s_onlineshop/logout.php">
+                                    <i class="bi bi-box-arrow-right"></i>ออกจากระบบ
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" href="/68s_onlineshop/login.php">
+                            <i class="bi bi-box-arrow-in-right"></i>เข้าสู่ระบบ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary rounded-pill px-3 d-flex align-items-center gap-2" href="/68s_onlineshop/register.php">
+                            <i class="bi bi-person-plus"></i>สมัครสมาชิก
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</nav>
+    
     <div class="container-fluid py-5">
         <!-- Header -->
         <div class="row justify-content-center mb-4">
@@ -66,7 +131,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <!-- Content -->
-        <div class="row justify-content-center">
+        <div class="row justify-content-center mb-5">
             <div class="col-lg-10">
                 <div class="card shadow-lg border-0">
                     <div class="card-body p-4">
