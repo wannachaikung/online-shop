@@ -19,6 +19,22 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .product-card { border: 1; background:#fff; }
+        .product-thumb { height: 180px; object-fit: cover; border-radius:.5rem; }
+        .product-meta { font-size:.75rem; letter-spacing:.05em; color:#8a8f98; text-transform:uppercase; }
+        .product-title { font-size:1rem; margin:.25rem 0 .5rem; font-weight:600; color:#222; }
+        .price { font-weight:700; }
+        .rating i { color:#ffc107; } /* ดำวสที อง */
+        .wishlist { color:#b9bfc6; }
+        .wishlist:hover { color:#ff5b5b; }
+        .badge-top-left {
+            position:absolute; top:.5rem; left:.5rem; z-index:2;
+            border-radius:.375rem;
+        }
+    </style>
+
     <style>
         * { font-family: 'Kanit', sans-serif; }
         body { background: linear-gradient(135deg, rgba(108, 179, 241, 0.9), rgba(63, 125, 241, 0.9) 100%); min-height: 100vh; }
@@ -134,48 +150,80 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p class="text-white-50 fs-5">คัดสรรสินค้าคุณภาพดีมาให้คุณโดยเฉพาะ</p>
         </div>
 
+
+         <!-- ===== ส่วนแสดงสินค้า =====  -->
         <div class="row g-4">
-            <?php foreach ($products as $product): ?>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="product-image d-flex align-items-center justify-content-center position-relative">
-                            <i class="bi bi-box-seam text-primary-blue opacity-50" style="font-size: 3rem;"></i>
-                            <span class="position-absolute top-0 end-0 badge bg-primary m-3 rounded-pill">NEW</span>
+        <?php foreach ($products as $p): ?>
+        <?php
+        // เตรียมรูป
+        $img = !empty($p['image'])
+            ? 'product_images/' . rawurlencode($p['image'])
+            : 'product_images/no-image.jpg';
+        // ตกแต่ง badge: NEW ภายใน 7 วัน / HOT ถ้าสต็อกน้อยกว่า 5
+        $isNew = isset($p['created_at']) && (time() - strtotime($p['created_at']) <= 7*24*3600);
+        $isHot = (int)$p['stock'] > 0 && (int)$p['stock'] < 5;
+        // ดาวรีวิว (ถ้าไม่มีใน DB จะโชว์ 4.5 จำลอง; ถ้ามี $p['rating'] ให้แทน)
+        $rating = isset($p['rating']) ? (float)$p['rating'] : 4.5;
+        $full = floor($rating); // จำนวนดาวเต็ม
+        $half = ($rating - $full) >= 0.5 ? 1 : 0; // มีดาวครึ่งดวงหรือไม่
+        ?>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card h-100 position-relative">
+                <?php if ($isNew): ?>
+                    <span class="badge bg-success badge-top-left">ใหม่</span>
+                <?php elseif ($isHot): ?>
+                    <span class="badge bg-danger badge-top-left">ฮอต</span>
+                <?php endif; ?>
+                <a href="product_detail.php?id=<?= (int)$p['product_id'] ?>" class="p-3 d-block">
+                    <img src="<?= htmlspecialchars($img) ?>"
+                         alt="<?= htmlspecialchars($p['product_name']) ?>"
+                         class="img-fluid w-100 product-thumb">
+                </a>
+                <div class="px-3 pb-3 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="product-meta">
+                            <?= htmlspecialchars($p['category_name'] ?? 'หมวดหมู่') ?>
                         </div>
-                        <div class="card-body">
-                            <h5 class="card-title fw-semibold"><?= htmlspecialchars($product['product_name']) ?></h5>
-                            <p class="text-muted small mb-2">
-                                <i class="bi bi-tag me-1"></i><?= htmlspecialchars($product['category_name']) ?>
-                            </p>
-                            <p class="card-text text-muted small"><?= nl2br(htmlspecialchars($product['description'])) ?></p>
-                            <h4 class="text-primary-blue fw-bold mb-3">฿<?= number_format($product['price'], 2) ?></h4>
-                            
-                            <div class="d-flex gap-2 ">
-                                <?php if ($isLoggedIn): ?>
-                                    <form action="cart.php" method="post" class="flex-fill">
-                                        <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-primary w-200">
-                                            <i class="bi bi-cart-plus me-1" ></i>เพิ่มลงตะกร้า
-                                        </button>
-                                    </form>
-                                <?php else: ?>
-                                    <div class="bg-light text-muted p-2 rounded text-center flex-fill small">
-                                        <i class="bi bi-lock me-1"></i>เข้าสู่ระบบเพื่อสั่งซื้อ
-                                    </div>
-                                <?php endif; ?>
-                                
-                                <a href="product_detail.php?id=<?= $product['product_id'] ?>" 
-                                   class="btn btn-outline-primary">
-                                    <i class="bi bi-eye"> รายละเอียด</i>
-                                </a>
-                            </div>
+                        <button class="btn btn-link p-0 wishlist" title="เพิ่มในรายการโปรด" type="button">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                    </div>
+                    <a class="text-decoration-none" href="product_detail.php?id=<?= (int)$p['product_id'] ?>">
+                        <div class="product-title">
+                            <?= htmlspecialchars($p['product_name']) ?>
                         </div>
+                    </a>
+                    <div class="rating mb-2">
+                        <?php for ($i=0; $i<$full; $i++): ?><i class="bi bi-star-fill"></i><?php endfor; ?>
+                        <?php if ($half): ?><i class="bi bi-star-half"></i><?php endif; ?>
+                        <?php for ($i=0; $i<5-$full-$half; $i++): ?><i class="bi bi-star"></i><?php endfor; ?>
+                    </div>
+                    <div class="price mb-3">
+                        <?= number_format((float)$p['price'], 2) ?> บาท
+                    </div>
+                    <div class="mt-auto d-flex gap-2">
+                        <?php if ($isLoggedIn): ?>
+                            <form action="cart.php" method="post" class="d-inline-flex gap-2">
+                                <input type="hidden" name="product_id" value="<?= (int)$p['product_id'] ?>">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-sm btn-success">เพิ่มในตะกร้า</button>
+                            </form>
+                        <?php else: ?>
+                            <small class="text-muted">เข้าสู่ระบบเพื่อสั่งซื้อ</small>
+                        <?php endif; ?>
+                        <a href="product_detail.php?id=<?= (int)$p['product_id'] ?>"
+                           class="btn btn-sm btn-outline-primary ms-auto">ดูรายละเอียด</a>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
         </div>
     </div>
+
+    
+    
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

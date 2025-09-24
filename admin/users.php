@@ -281,7 +281,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         function showDeleteConfirmation(userId) {
             Swal.fire({
                 title: 'คุณแน่ใจหรือไม่?',
-                text: 'คุณจะไม่สำมำรถเรียกคืนข ้อมูลกลับได ้!',
+                text: 'คุณจะไม่สามารถเรียกคืนข้อมูลกลับได ้!',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ลบ',
