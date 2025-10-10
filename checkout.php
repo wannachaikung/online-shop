@@ -1,128 +1,166 @@
 <?php
 session_start();
 require 'config.php';
-// ตรวจสอบการล็อกอิน
-if (!isset($_SESSION['user_id'])) { // TODO: ใส่ session ของ user
-header("Location: login.php"); // TODO: หน้ำ login
-exit;
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
 }
-$user_id = $_SESSION['user_id']; // TODO: ก ำหนด user_id
+$user_id = $_SESSION['user_id'];
+$isLoggedIn = true;
 
-
-// ดงึรำยกำรสนิ คำ้ในตะกรำ้
-$stmt = $conn->prepare("SELECT cart.cart_id, cart.quantity, cart.product_id, products.product_name,
-                                products.price
-                                FROM cart
-                                JOIN products ON cart.product_id = products.product_id
-                                WHERE cart.user_id = ?");
+$stmt = $conn->prepare("SELECT c.quantity, p.product_name, p.price, p.product_id FROM cart c JOIN products p ON c.product_id = p.product_id WHERE c.user_id = ?");
 $stmt->execute([$user_id]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Calculate total price
-$total = 0;
-foreach ($items as $item) {
-$total += $item['quantity'] * $item['price']; // TODO: quantity * price
+if (empty($items)) {
+    header("Location: cart.php");
+    exit;
 }
 
-// เมอื่ ผใู้ชก้ดยนื ยันค ำสั่งซอื้ (method POST)
+$total = array_sum(array_map(fn($item) => $item['quantity'] * $item['price'], $items));
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $address = trim($_POST['address']); // TODO: ชอ่ งกรอกทอี่ ยู่
-    $city = trim($_POST['city']); // TODO: ชอ่ งกรอกจังหวัด
-    $postal_code = trim($_POST['postal_code']); // TODO: ชอ่ งกรอกรหัสไปรษณีย์
-    $phone = trim($_POST['phone']); // TODO: ชอ่ งกรอกเบอรโ์ ทรศัพท์
+    $address = trim($_POST['address']);
+    $city = trim($_POST['city']);
+    $postal_code = trim($_POST['postal_code']);
+    $phone = trim($_POST['phone']);
 
-    // ตรวจสอบกำรกรอกข ้อมูล
     if (empty($address) || empty($city) || empty($postal_code) || empty($phone)) {
-        $errors[] = "กรุณำกรอกข ้อมูลให้ครบถ ้วน"; // TODO: ข ้อควำมแจ้งเตือนกรอกไม่ครบ
+        $errors[] = "กรุณากรอกข้อมูลการจัดส่งให้ครบถ้วน";
     }
     if (empty($errors)) {
-        // เริ่ม transaction
         $conn->beginTransaction();
         try {
-            // บันทกึขอ้ มลู กำรสั่งซอื้
             $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, status) VALUES (?, ?, 'pending')");
             $stmt->execute([$user_id, $total]);
             $order_id = $conn->lastInsertId();
-            // บันทกึ รำยกำรสนิ คำ้ใน order_items
-            $stmtItem = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
-foreach ($items as $item) {
-    $stmtItem->execute([$order_id, $item['product_id'], $item['quantity'], $item['price']]);
-    // TODO: product_id, quantity, price
-}
 
-// บันทกึขอ้ มลู กำรจัดสง่
+            $stmtItem = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+            foreach ($items as $item) {
+                $stmtItem->execute([$order_id, $item['product_id'], $item['quantity'], $item['price']]);
+            }
+
             $stmt = $conn->prepare("INSERT INTO shipping (order_id, address, city, postal_code, phone) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$order_id, $address, $city, $postal_code, $phone]);
-// ลำ้งตะกรำ้สนิ คำ้
+
             $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
             $stmt->execute([$user_id]);
-// ยืนยันกำรบันทึก
-$conn->commit();
-header("Location: orders.php?success=1"); // TODO: หนำ้แสดงผลค ำสั่งซอื้
-exit;
+
+            $conn->commit();
+            header("Location: orders.php?success=1");
+            exit;
         } catch (Exception $e) {
             $conn->rollBack();
-            $errors[] = "เกิดข ้อผิดพลำด: " . $e->getMessage(); 
+            $errors[] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล: " . $e->getMessage();
         }
     }
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="th">
-    <head>
-        <meta charset="UTF-8">
-        <title>สั่งซอื้ สนิ คำ้</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body class="container mt-4">
-        <h2>ยนื ยันกำรสั่งซอื้ </h2>
+<head>
+    <meta charset="UTF-8">
+    <title>ชำระเงิน - Online Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bs-primary-rgb: 59, 130, 246; 
+            --bs-body-font-family: 'Kanit', sans-serif; 
+            --bs-body-bg: #F0F4F8; /* <-- ปรับสีพื้นหลังให้เข้มขึ้นเล็กน้อย */
+        }
+        .footer a { color: #adb5bd; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #ffffff; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <?php include 'templates/header.php'; ?>
+
+    <main class="container py-5">
+        <div class="text-center mb-4">
+            <h2 class="display-6 fw-bold">ชำระเงิน</h2>
+            <p class="text-muted">กรุณาตรวจสอบรายการสินค้าและกรอกข้อมูลการจัดส่งให้ครบถ้วน</p>
+        </div>
+
         <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">
-                <ul>
-                    <?php foreach ($errors as $e): ?>
-                        <li><?= htmlspecialchars($e) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
+                <?php foreach ($errors as $e): ?>
+                    <p class="mb-0"><?= htmlspecialchars($e) ?></p>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="post">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h5 class="mb-0"><i class="bi bi-truck me-2"></i>ข้อมูลการจัดส่ง</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="address" class="form-label">ที่อยู่</label>
+                                    <textarea name="address" id="address" class="form-control" rows="3" required></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="city" class="form-label">จังหวัด</label>
+                                    <input type="text" name="city" id="city" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="postal_code" class="form-label">รหัสไปรษณีย์</label>
+                                    <input type="text" name="postal_code" id="postal_code" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="phone" class="form-label">เบอร์โทรศัพท์</label>
+                                    <input type="tel" name="phone" id="phone" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <?php endif; ?>
-                <!-- แสดงรำยกำรสนิ คำ้ในตะกรำ้ -->
-                <h5>รำยกำรสนิ คำ้ในตะกรำ้</h5>
-                <ul class="list-group mb-4">
-                    <?php foreach ($items as $item): ?>
-                        <li class="list-group-item">
-                            <?= htmlspecialchars($item['product_name']) ?> × <?= $item['quantity'] ?> = <?=
-number_format($item['price'] * $item['quantity'], 2) ?> บำท
-<!-- TODO: product_name, quantity, price -->
-</li>
-<?php endforeach; ?>
-<li class="list-group-item text-end"><strong>รวมทัง้สนิ้ : <?= number_format($total, 2) ?> บำท</strong></li>
-</ul>
-<!-- ฟอรม์ กรอกขอ้ มลู กำรจัดสง่ -->
-<form method="post" class="row g-3">
-    <div class="col-md-6">
-        <label for="address" class="form-label">ที่อยู่</label>
-        <input type="text" name="address" id="address" class="form-control" required>
-    </div>
-    <div class="col-md-4">
-        <label for="city" class="form-label">จังหวัด</label>
-        <input type="text" name="city" id="city" class="form-control" required>
-    </div>
-    <div class="col-md-2">
-        <label for="postal_code" class="form-label">รหัสไปรษณีย์</label>
-        <input type="text" name="postal_code" id="postal_code" class="form-control" required>
-    </div>
-    <div class="col-md-6">
-        <label for="phone" class="form-label">เบอรโ์ ทรศัพท</label> ์
-        <input type="text" name="phone" id="phone" class="form-control">
-    </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-success">ยนื ยันกำรสั่งซอื้ </button>
-        <a href="cart.php" class="btn btn-secondary">← กลับตะกร ้ำ</a> <!-- TODO: หน้ำ cart -->
-    </div>
-</form>
+
+                <div class="col-lg-5">
+                    <div class="card shadow">
+                         <div class="card-header py-3">
+                            <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>สรุปรายการสั่งซื้อ</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <ul class="list-group list-group-flush">
+                                <?php foreach ($items as $item): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <?= htmlspecialchars($item['product_name']) ?><br>
+                                            <small class="text-muted">จำนวน: <?= $item['quantity'] ?></small>
+                                        </div>
+                                        <span><?= number_format($item['price'] * $item['quantity'], 2) ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <div class="card-footer p-4">
+                            <div class="d-flex justify-content-between fs-5 fw-bold">
+                                <span>ยอดรวมทั้งหมด</span>
+                                <span class="text-primary"><?= number_format($total, 2) ?> บาท</span>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg shadow"><i class="bi bi-shield-check-fill me-2"></i>ยืนยันการสั่งซื้อ</button>
+                        <a href="cart.php" class="btn btn-outline-secondary">กลับไปที่ตะกร้า</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+   <?php include 'templates/footer.php'; ?>
+   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -270,7 +270,7 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">รปู สนิ คำ้ (jpg, png)</label>
+                                    <label class="form-label">รปูสินค้า (jpg, png)</label>
                                     <input type="file" name="product_image" class="form-control">
                                 </div>
 

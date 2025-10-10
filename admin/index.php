@@ -37,7 +37,7 @@ require 'auth_admin.php'; // ตรวจสอบสิทธิ์ผู้ด
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center gap-2" href="/68s_onlineshop/index.php">
-                        <i class="bi bi-house"></i>หน้าหลัก
+                        <i class="bi bi-house"></i>หน้าหลัก user
                     </a>
                 </li>
 
@@ -50,11 +50,6 @@ require 'auth_admin.php'; // ตรวจสอบสิทธิ์ผู้ด
                 <?php endif; ?>
                 
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center gap-2" href="/68s_onlineshop/cart.php">
-                            <i class="bi bi-bag"></i>ตะกร้าสินค้า
-                        </a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i>
@@ -107,7 +102,7 @@ require 'auth_admin.php'; // ตรวจสอบสิทธิ์ผู้ด
                             <i class="bi bi-people-fill text-white" style="font-size: 2rem;"></i>
                         </div>
                         <h5 class="card-title fw-bold">จัดการสมาชิก</h5>
-                        <p class="card-text text-muted">ดูและจัดการข้อมูลสมาชิกทั้งหมดในระบบ</p>
+                        <p class="card-text text-muted">ดูและจัดการข้อมูลสมาชิก</p>
                         <a href="users.php" class="btn btn-warning btn-lg w-100 rounded-pill shadow-sm">
                             <i class="bi bi-people me-2"></i>เข้าจัดการ
                         </a>
@@ -155,7 +150,7 @@ require 'auth_admin.php'; // ตรวจสอบสิทธิ์ผู้ด
                             <i class="bi bi-cart-check-fill text-white" style="font-size: 2rem;"></i>
                         </div>
                         <h5 class="card-title fw-bold">จัดการคำสั่งซื้อ</h5>
-                        <p class="card-text text-muted">ตรวจสอบและจัดการออเดอร์ทั้งหมด</p>
+                        <p class="card-text text-muted">ตรวจสอบและจัดการออเดอร์</p>
                         <a href="orders.php" class="btn btn-success btn-lg w-100 rounded-pill shadow-sm">
                             <i class="bi bi-cart-check me-2"></i>เข้าจัดการ
                         </a>
@@ -163,19 +158,9 @@ require 'auth_admin.php'; // ตรวจสอบสิทธิ์ผู้ด
                 </div>
             </div>
         </div>
-
-        <!-- Logout Section -->
-        <div class="text-center mt-5 mb-5">
-            <div class="card d-inline-block shadow">
-                <div class="card-body p-4">
-                    <h6 class="card-title text-muted mb-3">ต้องการออกจากระบบ?</h6>
-                    <a href="../logout.php" class="btn btn-outline-secondary btn-lg rounded-pill px-5">
-                        <i class="bi bi-box-arrow-right me-2"></i>ออกจากระบบ
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
+
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

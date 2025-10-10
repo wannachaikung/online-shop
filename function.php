@@ -19,6 +19,13 @@ function getShippingInfo($pdo, $order_id) {
 return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-
+// -----------------------------
+// ฟังก์ชันดึงข้อมูลผู้ใช้ด้วย ID
+// -----------------------------
+function get_user_by_id($pdo, $user_id) {
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
 ?>
