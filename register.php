@@ -105,7 +105,7 @@
                                                style="border-radius: 8px; border: 2px solid #e2e8f0; background: #f8fafc; padding: 10px 12px; font-size: 14px;" required>
                                     </div>
                                 </div>
-                                
+                                        
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="e-mail" class="form-label fw-medium text-secondary">อีเมล</label>

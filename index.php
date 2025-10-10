@@ -84,6 +84,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <span class="badge bg-light text-primary"><?= $_SESSION['role'] ?></span>
                             </a>
                         </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center gap-2" href="orders.php">
+                                <i class="bi bi-bag"></i>ประวัติการสั่งซื้อ
+                            </a>
+                        </li>
+
                         <li class="nav-item">
                             <a class="btn btn-primary rounded-pill px-3 d-flex align-items-center gap-2" href="logout.php">
                                 <i class="bi bi-box-arrow-right"></i>ออกจากระบบ

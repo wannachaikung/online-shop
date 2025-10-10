@@ -55,7 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    header("Location: products.php?status=updated");
+    $_SESSION['success'] = "อัปเดตข้อมูลสินค้าเรียบร้อยแล้ว";
+    header("Location: products.php");
     exit;
 }
 
