@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 10, 2025 at 12:03 PM
+-- Generation Time: Oct 10, 2025 at 09:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,13 @@ CREATE TABLE `cart` (
   `added_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`cart_id`, `user_id`, `product_id`, `quantity`, `added_at`) VALUES
+(24, 5, 2, 3, '2025-10-10 15:23:54');
+
 -- --------------------------------------------------------
 
 --
@@ -59,29 +66,6 @@ INSERT INTO `categories` (`category_id`, `category_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `db6646_048`
---
-
-CREATE TABLE `db6646_048` (
-  `key` int(5) NOT NULL COMMENT 'ลำดับ',
-  `std_id` varchar(9) NOT NULL COMMENT 'รหัสนักศึกษา',
-  `f_name` varchar(100) NOT NULL COMMENT 'ชื่อ',
-  `l_name` varchar(100) NOT NULL COMMENT 'สกุล',
-  `mail` varchar(100) NOT NULL COMMENT 'อีเมล',
-  `tel` varchar(20) NOT NULL COMMENT 'เบอร์โทร',
-  `create_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'เวลาสร้าง'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `db6646_048`
---
-
-INSERT INTO `db6646_048` (`key`, `std_id`, `f_name`, `l_name`, `mail`, `tel`, `create_at`) VALUES
-(1, '664230001', 'Test', 'testing', 'userTest@email.com', '083XXXXXX', '2025-10-02 02:23:00');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `orders`
 --
 
@@ -99,9 +83,11 @@ CREATE TABLE `orders` (
 
 INSERT INTO `orders` (`order_id`, `user_id`, `total_amount`, `order_date`, `status`) VALUES
 (1, NULL, 834.00, '2025-08-07 03:40:11', 'processing'),
-(5, 25, 100000.00, '2025-09-25 04:48:32', 'pending'),
-(6, 25, 30000.00, '2025-10-10 07:18:10', 'pending'),
-(7, 25, 60000.00, '2025-10-10 07:23:00', 'pending');
+(5, 25, 100000.00, '2025-09-25 04:48:32', 'completed'),
+(6, 25, 30000.00, '2025-10-10 07:18:10', 'shipped'),
+(7, 25, 60000.00, '2025-10-10 07:23:00', 'pending'),
+(8, 5, 35.00, '2025-10-10 15:00:43', 'cancelled'),
+(12, NULL, 37480.00, '2025-10-10 19:30:52', 'cancelled');
 
 -- --------------------------------------------------------
 
@@ -128,7 +114,10 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`
 (9, 5, 9, 1, 30000.00),
 (10, 5, 10, 1, 70000.00),
 (11, 6, 9, 1, 30000.00),
-(12, 7, 9, 2, 30000.00);
+(12, 7, 9, 2, 30000.00),
+(13, 8, 2, 1, 35.00),
+(20, 12, 13, 1, 6990.00),
+(21, 12, 12, 1, 30490.00);
 
 -- --------------------------------------------------------
 
@@ -152,12 +141,14 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `stock`, `image`, `category_id`, `created_at`) VALUES
-(1, 'หูฟังไร้สาย', 'หูฟัง Bluetooth คุณภาพเสียงดี', 599.00, 50, '', 1, '2025-08-07 03:40:11'),
-(2, 'สมุดโน้ต', 'สมุดโน้ตขนาด A5', 35.00, 100, '', 2, '2025-08-07 03:40:11'),
-(3, 'เสื้อยืดคอกลม', 'เสื้อยืดสีขาวคอกลม', 199.00, 80, '', 3, '2025-08-07 03:40:11'),
-(5, 'laptop', 'Notebook gaming', 20000.00, 1, '', 7, '2025-09-11 05:24:50'),
+(1, 'หูฟังไร้สาย', 'หูฟัง Bluetooth คุณภาพเสียงดี', 599.00, 50, 'product_1760107198.jpg', 1, '2025-08-07 03:40:11'),
+(2, 'สมุดโน้ต', 'สมุดโน้ตขนาด A5', 35.00, 100, 'product_1760107261.jpg', 2, '2025-08-07 03:40:11'),
+(3, 'เสื้อยืดคอกลม', 'เสื้อยืดสีขาวคอกลม', 199.00, 80, 'product_1760107123.jpg', 3, '2025-08-07 03:40:11'),
 (9, 'laptop gaming', '', 30000.00, 3, 'product_1758170310.jpg', 7, '2025-09-18 04:20:38'),
-(10, '์Notebook ROG zyphrus', 'โน๊ตบุ๊คทำงานสุดแรง', 70000.00, 1, 'product_1758172016.jpg', 7, '2025-09-01 05:06:56');
+(10, '์Notebook ROG zyphrus', 'โน๊ตบุ๊คทำงานสุดแรง', 70000.00, 5, 'product_1758172016.jpg', 7, '2025-09-01 05:06:56'),
+(11, 'Notebook Lenovo Legion Slim 5', 'Notebook บางเบา รองรับการทำงาน AI อย่างเต็มประสิทธิภาพ', 49990.00, 21, 'product_1760106583.jpg', 7, '2025-10-10 14:29:43'),
+(12, 'Notebook Lenovo Yoga 7', 'Nootbook สายทำงาน บางและเบา ผ่านมาตรฐาน Intel “evo” platform เพื่อประสบการณ์การใช้งานที่สมบูรณ์แบบ', 30490.00, 32, 'product_1760107772.jpg', 7, '2025-10-10 14:49:33'),
+(13, 'Apple AirPods Pro 2 with USB-C & Magsafe Charging Case', 'APPLE AirPods Pro (2nd generation) with MagSafe Case (USB-C)\r\nคุณสมบัติเสียงที่ปรับตามสภาพแวดล้อม\r\nการตัดเสียงรบกวนแบบแอ็คทีฟและโหมดฟังเสียงภายนอก\r\nรับรู้เมื่อมีการสนทนา\r\nระบบเสียงตามตำแหน่งสำหรับคุณพร้อมการติดตามศีรษะแบบไดนามิก\r\nAirPods และเคสชาร์จที่ทนฝุ่น เหงื่อ และน้ำ\r\nเคสชาร์จ MagSafe (USB-C) พร้อมลำโพงและช่องคล้องสาย\r\nฟังได้นานสูงสุด 6 ชั่วโมงต่อการชาร์จหนึ่งครั้ง', 6990.00, 23, 'product_1760110408.jpg', 1, '2025-10-10 14:53:47');
 
 -- --------------------------------------------------------
 
@@ -183,7 +174,9 @@ INSERT INTO `shipping` (`shipping_id`, `order_id`, `address`, `city`, `postal_co
 (1, 1, '123 ถนนหลัก เขตเมือง', 'กรุงเทพมหานคร', '10100', '0812345678', 'shipped'),
 (5, 5, '123', 'nakhon pathom', '73000', '0988775644', 'not_shipped'),
 (6, 6, '123', 'nakhon pathom', '73000', '0988775644', 'not_shipped'),
-(7, 7, '123', 'nakhon pathom', '73000', '0988775644', 'not_shipped');
+(7, 7, '123', 'nakhon pathom', '73000', '0988775644', 'not_shipped'),
+(8, 8, '123', 'ืnakhon pathom', '73000', '09887756441', 'not_shipped'),
+(12, 12, '40/1', 'ืnakhon pathom', '73000', '09887756441', 'not_shipped');
 
 -- --------------------------------------------------------
 
@@ -198,27 +191,31 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `full_name` varchar(100) DEFAULT NULL,
   `role` enum('admin','member') DEFAULT 'member',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `db6646_048` varchar(100) NOT NULL
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `full_name`, `role`, `created_at`, `db6646_048`) VALUES
-(1, 'admin1', 'admin_pass', 'admin1@example.com', 'Admin One', 'admin', '2025-08-07 03:40:11', ''),
-(5, 'admin', '$2y$10$xZJXlmlX6.0mJKm5OY8Ooe9OvBR4MFmkg1fU3otbtTcN5EZCi9kFO', 'admin@gmail.com', 'วรรณชัย เชื้อทอง', 'admin', '2025-08-07 05:06:34', ''),
-(25, 'Ares', '$2y$10$yhLq/4YnbyPQi1d7jBUzeOmLT459POOgERioZtLRVJCHcQwM9cGX2', 'ares@gmail.com', 'Ares kung', 'member', '2025-09-11 02:58:55', ''),
-(26, 'Ares5', '$2y$10$ArnOw0NBRAX5TI.l.rv4Qu3yWYAyCcljDbAoR0GajvTkUaoVBCyMq', 'ares2@gmail.com', 'วรรณชัย เชื้อทอง', 'member', '2025-09-11 03:59:38', '');
+INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `full_name`, `role`, `created_at`) VALUES
+(1, 'admin1', 'admin_pass', 'admin1@example.com', 'Admin One', 'admin', '2025-08-07 03:40:11'),
+(5, 'admin', '$2y$10$xZJXlmlX6.0mJKm5OY8Ooe9OvBR4MFmkg1fU3otbtTcN5EZCi9kFO', 'admin@gmail.com', 'วรรณชัย เชื้อทอง', 'admin', '2025-08-07 05:06:34'),
+(25, 'Ares', '$2y$10$yhLq/4YnbyPQi1d7jBUzeOmLT459POOgERioZtLRVJCHcQwM9cGX2', 'ares@gmail.com', 'Ares kung', 'member', '2025-09-11 02:58:55'),
+(26, 'Ares5', '$2y$10$ArnOw0NBRAX5TI.l.rv4Qu3yWYAyCcljDbAoR0GajvTkUaoVBCyMq', 'ares2@gmail.com', 'วรรณชัย เชื้อทอง', 'member', '2025-09-11 03:59:38');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `wishlist`
 --
--- Error reading structure for table online_shop.wishlist: #1932 - Table &#039;online_shop.wishlist&#039; doesn&#039;t exist in engine
--- Error reading data for table online_shop.wishlist: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near &#039;FROM `online_shop`.`wishlist`&#039; at line 1
+
+CREATE TABLE `wishlist` (
+  `wishlist_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
@@ -237,12 +234,6 @@ ALTER TABLE `cart`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`category_id`);
-
---
--- Indexes for table `db6646_048`
---
-ALTER TABLE `db6646_048`
-  ADD PRIMARY KEY (`key`);
 
 --
 -- Indexes for table `orders`
@@ -282,6 +273,14 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `wishlist`
+--
+ALTER TABLE `wishlist`
+  ADD PRIMARY KEY (`wishlist_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -289,49 +288,49 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- AUTO_INCREMENT for table `db6646_048`
---
-ALTER TABLE `db6646_048`
-  MODIFY `key` int(5) NOT NULL AUTO_INCREMENT COMMENT 'ลำดับ', AUTO_INCREMENT=2;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `shipping`
 --
 ALTER TABLE `shipping`
-  MODIFY `shipping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `shipping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT for table `wishlist`
+--
+ALTER TABLE `wishlist`
+  MODIFY `wishlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- Constraints for dumped tables
@@ -368,6 +367,13 @@ ALTER TABLE `products`
 --
 ALTER TABLE `shipping`
   ADD CONSTRAINT `shipping_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `wishlist`
+--
+ALTER TABLE `wishlist`
+  ADD CONSTRAINT `wishlist_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `wishlist_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
